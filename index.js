@@ -4,6 +4,8 @@ let client;
 let checkout;
 let collection;
 let lineItemIds=[];
+let itemSelected=false;
+let termChecked=false;
 
 function initializeClient () {
   let url = 'https://zach-api.counsel.bitbakeryapps.in/api?path=storefront_access_tokens.json'  
@@ -23,7 +25,6 @@ function initializeClient () {
       client.checkout.create().then((co) => {  
         checkout = co;      
         fetchCollection();      
-      //  console.log(checkout);        
       });                    
     });
 };
@@ -33,38 +34,34 @@ async function fetchCollection () {
 
   collection = await client.collection.fetchWithProducts(collectionId);
   displayProducts(collection.products);
-  // for final version, hide the loading message and show the products div
 }
 
 function displayProducts(products) {
-    // for (let i = 0; i < collection.products.length; i++){
-    //     $('#ul-offer-list').append(`
-    //       <li>
-    //         <img src=${collection.products[i].images[0].src} class="product-images"/>
-    //         <p>Price Per Day $${collection.products[i].variants[0].price/30} </p>
-    //       </li>      
-    //     `)
-    // };
     $('#js-1-month').append(`
     <li>
-      <img src=${collection.products[0].images[0].src} class="product-images"/>
-      <p>Price Per Day $${collection.products[0].variants[0].price/30} </p>
+      <img src=${collection.products[2].images[0].src} class="product-images"/>
+      <p class="offer-title">1 Month</p>
+      <p class="price-per-day">$${collection.products[2].variants[0].price/30}/day</p>
     </li>      
   `)
 
   $('#js-3-months').append(`
     <li>
       <img src=${collection.products[1].images[0].src} class="product-images"/>
-      <p>Price Per Day $${collection.products[1].variants[0].price/30} </p>
+      <p class="offer-title">3 Months</p>
+      <p class="price-per-day">$${collection.products[1].variants[0].price/30}/day</p>
     </li>      
   `)
 
   $('#js-6-months').append(`
     <li>
-      <img src=${collection.products[2].images[0].src} class="product-images"/>
-      <p>Price Per Day $${collection.products[2].variants[0].price/30} </p>
+      <img src=${collection.products[0].images[0].src} class="product-images"/>
+      <p class="offer-title">6 Months</p>
+      <p class="price-per-day">$${collection.products[0].variants[0].price/30}/day</p>
     </li>      
   `)
+
+  $('#spinner').hide();
 };
 
 //remove previous items from the cart
@@ -75,30 +72,30 @@ async function emptyCart () {
 
 };
 
+// offer click function
 async function click1month () {
   await emptyCart();
 
   const checkoutId = checkout.id;
   const lineItemsToAdd = [
     {
-      variantId: collection.products[0].variants[0].id,
+      variantId: collection.products[2].variants[0].id,
       quantity: 1      
     }    
   ];
-
-// Add item to the checkout
+// add item to the checkout
   client.checkout.addLineItems(checkoutId, lineItemsToAdd).then((checkout) => {
+    lineItemIds.push(checkout.lineItems[0].id)
   });
-
 // assign checkoutURL to button 
-  $('#js-checkout-button').html(`
+    $('#js-checkout-button').html(`
   <form action="${checkout.webUrl}">
   <input type="submit" value="Checkout" id="checkout-button"/>
   </form>`)
 };
 
 
-
+// offer click function
 async function click3months() {
   await emptyCart();
 
@@ -109,11 +106,10 @@ async function click3months() {
       quantity: 1      
     }    
   ];
-
-// Add item to the checkout
+// add item to the checkout
   client.checkout.addLineItems(checkoutId, lineItemsToAdd).then((checkout) => {
+    lineItemIds.push(checkout.lineItems[0].id);
   });
-
 // assign checkoutURL to button 
 $('#js-checkout-button').html(`
 <form action="${checkout.webUrl}">
@@ -121,19 +117,20 @@ $('#js-checkout-button').html(`
 </form>`)
 };
 
-
+// offer click function
 async function click6months() {
   await emptyCart();
 
   const checkoutId = checkout.id;
   const lineItemsToAdd = [
     {
-      variantId: collection.products[2].variants[0].id,
+      variantId: collection.products[0].variants[0].id,
       quantity: 1      
     }    
   ];
-// Add item to the checkout
+// add item to the checkout
   client.checkout.addLineItems(checkoutId, lineItemsToAdd).then((checkout) => {
+    lineItemIds.push(checkout.lineItems[0].id);
   });
 // assign checkoutURL to button 
 $('#js-checkout-button').html(`
@@ -142,22 +139,45 @@ $('#js-checkout-button').html(`
   </form>`)
 };
 
+// check that both an item are selected and the terms box is checked
+function checkItemsAndTerms () {
+  if(itemSelected && termChecked) {
+    $("#js-checkout-button-disabled").hide();
+    $("#js-checkout-button").css('display','flex');
+  }
+}
 
+// listeners for clicks and adjusting highlight color for selected item
 function initializeListeners () {
-  $('#js-1-month').on('click', function(){
+  $('#js-1-month').on('click', function(event){
+    itemSelected=true;
+    $("#js-3-months").removeClass('offer-item-selected');
+    $("#js-6-months").removeClass('offer-item-selected');
+    $(event.currentTarget).toggleClass('offer-item-selected');
     click1month();
-    console.log('1 month clicked')
   });
 
   $('#js-3-months').on('click', function(){
+    itemSelected=true;
+    $("#js-1-month").removeClass('offer-item-selected');
+    $("#js-6-months").removeClass('offer-item-selected');
+    $(event.currentTarget).toggleClass('offer-item-selected');
     click3months();
   });
 
   $('#js-6-months').on('click', function(){
+    itemSelected=true;
+    $("#js-3-months").removeClass('offer-item-selected');
+    $("#js-1-month").removeClass('offer-item-selected');
+    $(event.currentTarget).toggleClass('offer-item-selected');
     click6months();
   });
+  
+  $('#terms').on('click', function(){
+    termChecked=true;
+    checkItemsAndTerms();
+  });
 }
-
 
 //booting up the event listeners
 function bootUp() {

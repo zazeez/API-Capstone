@@ -7,6 +7,7 @@ let lineItemIds=[];
 let itemSelected=false;
 let termChecked=false;
 
+// intializing to connect to our store to Shopify's API
 function initializeClient () {
   let url = 'https://zach-api.counsel.bitbakeryapps.in/api?path=storefront_access_tokens.json'  
 
@@ -72,7 +73,7 @@ async function emptyCart () {
 
 };
 
-// offer click function
+// offer click functions to add items to a checkout and assign the checkout URL to the checkout button
 async function click1month () {
   await emptyCart();
 
@@ -83,11 +84,9 @@ async function click1month () {
       quantity: 1      
     }    
   ];
-// add item to the checkout
   client.checkout.addLineItems(checkoutId, lineItemsToAdd).then((checkout) => {
     lineItemIds.push(checkout.lineItems[0].id)
   });
-// assign checkoutURL to button 
     $('#js-checkout-button').html(`
   <form action="${checkout.webUrl}">
   <input type="submit" value="Checkout" id="checkout-button"/>
@@ -95,7 +94,6 @@ async function click1month () {
 };
 
 
-// offer click function
 async function click3months() {
   await emptyCart();
 
@@ -106,18 +104,15 @@ async function click3months() {
       quantity: 1      
     }    
   ];
-// add item to the checkout
   client.checkout.addLineItems(checkoutId, lineItemsToAdd).then((checkout) => {
     lineItemIds.push(checkout.lineItems[0].id);
   });
-// assign checkoutURL to button 
 $('#js-checkout-button').html(`
 <form action="${checkout.webUrl}">
 <input type="submit" value="Checkout" id="checkout-button"/>
 </form>`)
 };
 
-// offer click function
 async function click6months() {
   await emptyCart();
 
@@ -128,11 +123,9 @@ async function click6months() {
       quantity: 1      
     }    
   ];
-// add item to the checkout
   client.checkout.addLineItems(checkoutId, lineItemsToAdd).then((checkout) => {
     lineItemIds.push(checkout.lineItems[0].id);
   });
-// assign checkoutURL to button 
 $('#js-checkout-button').html(`
   <form action="${checkout.webUrl}">
   <input type="submit" value="Checkout" id="checkout-button"/>
@@ -179,7 +172,6 @@ function initializeListeners () {
   });
 }
 
-//booting up the event listeners
 function bootUp() {
     initializeClient()
     initializeListeners()    

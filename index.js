@@ -42,7 +42,7 @@ function displayProducts(products) {
     <li>
       <img src=${collection.products[2].images[0].src} class="product-images"/>
       <p class="offer-title">1 Month</p>
-      <p class="price-per-day">$${collection.products[2].variants[0].price/30}/day</p>
+      <p class="price-per-day">$${collection.products[2].variants[0].price/15}/day</p>
     </li>      
   `)
 
@@ -50,7 +50,7 @@ function displayProducts(products) {
     <li>
       <img src=${collection.products[1].images[0].src} class="product-images"/>
       <p class="offer-title">3 Months</p>
-      <p class="price-per-day">$${collection.products[1].variants[0].price/30}/day</p>
+      <p class="price-per-day">$${collection.products[1].variants[0].price/15}/day</p>
     </li>      
   `)
 
@@ -58,7 +58,7 @@ function displayProducts(products) {
     <li>
       <img src=${collection.products[0].images[0].src} class="product-images"/>
       <p class="offer-title">6 Months</p>
-      <p class="price-per-day">$${collection.products[0].variants[0].price/30}/day</p>
+      <p class="price-per-day">$${collection.products[0].variants[0].price/15}/day</p>
     </li>      
   `)
 
